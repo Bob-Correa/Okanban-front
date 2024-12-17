@@ -1,0 +1,59 @@
+
+#lists-container {
+    margin:0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tag {
+    cursor: pointer;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+main {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    column-gap: 1rem;
+}
+
+dialog {
+    background: none;
+    border: none;
+    top: 0;
+    left: 0;
+}
+
+dialog .modal-card {
+    box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1),
+        0 0 0 1px rgba(10, 10, 10, 0.02);
+}
+
+dialog::backdrop {
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+main > section {
+    height: min-content;
+}
+
+article:not(:last-child) {
+    margin-bottom: 0.5rem;
+}
+
+@media screen and (max-width: 768px) {
+    header h1 {
+        width: 100%;
+    }
+
+    header button {
+        width: 100%;
+    }
+}
