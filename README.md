@@ -1,4 +1,188 @@
-# O'kanban - SPA E02 - Fetch et templates
+# O'kanban - SPA E03 - CRUD & Drag & Drop
+
+[Rappel : lien pour créer des issues](https://github.com/O-clock-Skaven/Soutien-ateliers/issues)
+
+## Étape 1 - On relance les serveurs
+
+On rappelle à toute fin utile qu'il faut lancer le frontend ET le backend indépendamment pour que les deux puissent communiquer 🗣️.
+
+## Étape 2 - Modifier une liste
+
+### 2.1. Créer une fenêtre de dialogue d'édition de liste
+
+Dans le HTML, s'inspirer de la fenêtre de dialogue d'ajout de liste existante et créer une nouvelle fenêtre de dialogue pour l'édition du titre d'une liste.
+
+> **ASTUCE** l'afficher avec la classe `is-active` (codée en dur) pour la tester, puis retirer cette classe que l'on ajoutera dynamiquement suite à une interaction de l'utilisateur.
+
+### 2.2. Créer le bouton d'édition
+
+Dans le HTML, modifier le template d'une liste pour ajouter une icône « crayon » 🖍️ à l'aide de la librairie `Font Awesome` déjà en place (V6).
+
+On peut s'inspirer du code existant pour le bouton « plus » ➕.
+
+### 2.3. Ouvrir la fenêtre de dialogue
+
+Lors d'un clic sur ce bouton, depuis n'importe quelle liste, on souhaite ouvrir la fenêtre de dialogue d'édition. Pour cela, il faut poser un _listener_ sur ce bouton.
+
+**Problème** : à l'ouverture de la page par l'utilisateur, les listes ne sont pas encore présentes dans le DOM, puisque le frontend doit les `fetch` au préalable.
+
+**Solution** : on doit poser le _listener_ directement sur le clone avant son insertion dans le DOM, c'est-à-dire dans la fonction `addListToListsContainer`.
+
+<details><summary>Un peu d'aide ?</summary>
+
+```js
+function addListToListsContainer(listData) {
+  // ...
+
+  const editListButton = listClone.querySelector(/* SÉLECTEUR pour le bouton 🖍️ situé dans le clone */);
+  editListButton.addEventListener("click", () => {
+    // Ouvrir la fenêtre de dialogue d'édition de liste
+  });
+}
+```
+
+</details>
+
+**Problème** : une fois la fenêtre de dialogue ouverte, impossible de savoir via quelle liste celle-ci a été ouverte !
+
+**Solution** : on pourrait ajouter dans les [dataset](https://developer.mozilla.org/fr/docs/Learn/HTML/Howto/Use_data_attributes) de la fenêtre de dialogue d'édition, l'ID de la liste sur laquelle l'utilisateur vient de cliquer.
+
+<details><summary>Un peu d'aide ?</summary>
+
+```js
+function addListToListsContainer(listData) {
+  // ...
+
+  const editListButton = listClone.querySelector(/* SÉLECTEUR pour le bouton 🖍️ situé dans le clone */);
+  editListButton.addEventListener("click", () => {
+    // Ouvrir la fenêtre de dialogue d'édition de liste
+
+    const editListModal = document.querySelector(/* SÉLECTEUR pour la fenêtre de dialogue d'édition */);
+    editListModal.dataset.listId = listData.id;
+  });
+}
+```
+
+> **Note :** vous pouvez utiliser l'inspecteur (onglet `Inspecteur` ou `Element`) pour constater le résultat :
+> lorsque vous ouvrez la fenêtre de dialogue, celle-ci présente dans son HTML l'attribut `data-list-id="X"` où `X` est l'ID de la liste choisie.
+
+</details>
+
+### 2.4. Soumission du formulaire
+
+De manière similaire au formulaire d'ajout d'une liste :
+
+- écouter la soumission du formulaire de modification d'une liste ;
+- récupérer les données du formulaire ;
+- faire une requête `PATCH` vers la route `/lists/:id` ;
+  > l'ID de la liste à modifier se trouve dans les `dataset` de la fenêtre de dialogue, comme vu à l'étape précédente !
+- récupérer le résultat de la requête ;
+- mettre à jour la liste sur la page, avec son nouveau titre ;
+- fermer la fenêtre de dialogue ;
+- re-initialiser le formulaire.
+
+<details><summary>Un peu d'aide ?</summary>
+
+```js
+// Sélectionner le formulaire d'édition de liste
+//
+// Écouter l'évènement `submit` sur ce formulaire, auquel cas :
+// - empêcher le comportement par défaut du formulaire
+// - récupérer les données du formulaire (le nouveau titre)
+// - récupérer l'ID de la liste à modifier dans les dataset de la fenêtre de dialogue
+// - PATCH `/lists/:listId` avec comme body { "title": "..." }
+// - récupérer le résultat de la requête PATCH, et en cas de succès
+// - sélectionner la liste du DOM correspondant au bon ID
+// - modifier le contenu de l'élément avec le slot `list-title` avec le nouveau titre choisi
+// - fermer la fenêtre de dialogue
+// - reset le formulaire
+//
+// Festoyer !
+```
+
+</details>
+
+---
+
+⚠️ **Les deux parties suivantes sont indépendantes.** ⚠️
+
+---
+
+## Étape 3 (BONUS) - Suppression d'une liste
+
+Bon bah, rebelote, hein 🤪 !
+
+Cette fois-ci, un peu plus débrouillard :
+
+- ajouter un bouton de suppression sur les listes ;
+- ouvrir une fenêtre de dialogue de « confirmation avant suppression » ;
+    > **BONUS** si la liste possède des cartes :
+    > - prévenir que la suppression supprimera également toutes les cartes à l'intérieur ;
+    > - OU empêcher explicitement l'utilisateur de supprimer une liste qui possède des cartes.
+
+- suite à la confirmation de la suppression, faire une requête `DELETE` vers l'API pour supprimer la liste ;
+- retirer la liste de la page ;
+- fermer la fenêtre de dialogue.
+
+## Étape 4 (BONUS) - Drag & Drop
+
+On souhaiterait pouvoir modifier la **position** des listes sur le Kanban, en glissant-déposant une liste vers un nouvel emplacement.
+
+**Problème :** _on va quand même pas le faire à la main 🙀 ?_
+
+**Solution :** _et bah non !_ Il existe des solutions clé-en-main pour la partie frontend.
+
+## 4.1. Installation
+
+Jeter un œil à la [documentation](https://github.com/SortableJS/Sortable) de `SortableJS`,
+aux [démonstrations](http://sortablejs.github.io/Sortable/),
+et l'installer dans le code en utilisant le script fourni via un [CDN](https://github.com/SortableJS/Sortable?tab=readme-ov-file#cdn).
+
+> **NOTE** ce script externe doit être chargé AVANT nos scripts, sinon il ne sera pas possible d'utiliser la variable globale `Sortable`.
+
+## 4.2. Mise en place (frontend)
+
+Objectif n°1 : réussir à logger en `console` l'ID de la liste qui vient d'être déplacé.
+
+<details><summary>Un peu d'aide ?</summary>
+
+```js
+Sortable.create(ELEMENT_DU_DOM_CONTENANT_LISTES, {
+  onEnd(event) {
+    // Callback qui se déclenche lorsque l'utilisateur déplace une liste
+    console.log(event);
+  }
+});
+```
+
+</details>
+
+## 4.3. Mise à jour (backend)
+
+Objectif n°2 : réussir à sauvegarder la position actuelle de toutes les listes.
+
+Pour **chaque** liste sur la page, récupérer sa position et exécuter une requête `PATCH /lists/:listId` (avec le bon body) afin de sauvegarder sa nouvelle position.
+
+> **NOTE** cette approche n'est absolument pas performante, car on lance **une requête HTTP par liste**,
+> ce qui peut faire beaucoup selon le nombre de listes présentes sur la page !
+> Idéalement, on aimerait uniquement mettre à jour la liste qui vient d'être déplacé. Nous discuterons en cours d'autres implémentations et modélisations possibles.
+
+<details><summary>Un peu d'aide</summary>
+
+```js
+// Dans le callback 'onEnd'
+
+// Sélectionner toutes les listes sur la page
+// Pour chaque liste :
+// - récupérer son ID
+// - récupérer sa position
+// - faire l'appel PATCH /lists/:listId avec BODY { position: X }
+
+```
+
+</details>
+
+## O'kanban - SPA E02 - Fetch et templates
 
 [Rappel : lien pour créer des issues](https://github.com/O-clock-Skaven/Soutien-ateliers/issues)
 
@@ -8,7 +192,189 @@
 
 ## Étape 1 - Mise en place
 
-### 1.1. Lancer le back 🦿
+### 1.1. Lancer le back 🦿# O'kanban - SPA E03 - CRUD & Drag & Drop
+
+[Rappel : lien pour créer des issues](https://github.com/O-clock-Quindim/Soutien-ateliers/issues)
+
+## Étape 1 - On relance les serveurs
+
+On rappelle à toute fin utile qu'il faut lancer le frontend ET le backend indépendamment pour que les deux puissent communiquer 🗣️.
+
+## Étape 2 - Modifier une liste
+
+### 2.1. Créer une fenêtre de dialogue d'édition de liste
+
+Dans le HTML, s'inspirer de la fenêtre de dialogue d'ajout de liste existante et créer une nouvelle fenêtre de dialogue pour l'édition du titre d'une liste.
+
+> **ASTUCE** l'afficher avec la classe `is-active` (codée en dur) pour la tester, puis retirer cette classe que l'on ajoutera dynamiquement suite à une interaction de l'utilisateur.
+
+### 2.2. Créer le bouton d'édition
+
+Dans le HTML, modifier le template d'une liste pour ajouter une icône « crayon » 🖍️ à l'aide de la librairie `Font Awesome` déjà en place (V6).
+
+On peut s'inspirer du code existant pour le bouton « plus » ➕.
+
+### 2.3. Ouvrir la fenêtre de dialogue
+
+Lors d'un clic sur ce bouton, depuis n'importe quelle liste, on souhaite ouvrir la fenêtre de dialogue d'édition. Pour cela, il faut poser un _listener_ sur ce bouton.
+
+**Problème** : à l'ouverture de la page par l'utilisateur, les listes ne sont pas encore présentes dans le DOM, puisque le frontend doit les `fetch` au préalable.
+
+**Solution** : on doit poser le _listener_ directement sur le clone avant son insertion dans le DOM, c'est-à-dire dans la fonction `addListToListsContainer`.
+
+<details><summary>Un peu d'aide ?</summary>
+
+```js
+function addListToListsContainer(listData) {
+  // ...
+
+  const editListButton = listClone.querySelector(/* SÉLECTEUR pour le bouton 🖍️ situé dans le clone */);
+  editListButton.addEventListener("click", () => {
+    // Ouvrir la fenêtre de dialogue d'édition de liste
+  });
+}
+```
+
+</details>
+
+**Problème** : une fois la fenêtre de dialogue ouverte, impossible de savoir via quelle liste celle-ci a été ouverte !
+
+**Solution** : on pourrait ajouter dans les [dataset](https://developer.mozilla.org/fr/docs/Learn/HTML/Howto/Use_data_attributes) de la fenêtre de dialogue d'édition, l'ID de la liste sur laquelle l'utilisateur vient de cliquer.
+
+<details><summary>Un peu d'aide ?</summary>
+
+```js
+function addListToListsContainer(listData) {
+  // ...
+
+  const editListButton = listClone.querySelector(/* SÉLECTEUR pour le bouton 🖍️ situé dans le clone */);
+  editListButton.addEventListener("click", () => {
+    // Ouvrir la fenêtre de dialogue d'édition de liste
+
+    const editListModal = document.querySelector(/* SÉLECTEUR pour la fenêtre de dialogue d'édition */);
+    editListModal.dataset.listId = listData.id;
+  });
+}
+```
+
+> **Note :** vous pouvez utiliser l'inspecteur (onglet `Inspecteur` ou `Element`) pour constater le résultat :
+> lorsque vous ouvrez la fenêtre de dialogue, celle-ci présente dans son HTML l'attribut `data-list-id="X"` où `X` est l'ID de la liste choisie.
+
+</details>
+
+### 2.4. Soumission du formulaire
+
+De manière similaire au formulaire d'ajout d'une liste :
+
+- écouter la soumission du formulaire de modification d'une liste ;
+- récupérer les données du formulaire ;
+- faire une requête `PATCH` vers la route `/lists/:id` ;
+  > l'ID de la liste à modifier se trouve dans les `dataset` de la fenêtre de dialogue, comme vu à l'étape précédente !
+- récupérer le résultat de la requête ;
+- mettre à jour la liste sur la page, avec son nouveau titre ;
+- fermer la fenêtre de dialogue ;
+- re-initialiser le formulaire.
+
+<details><summary>Un peu d'aide ?</summary>
+
+```js
+// Sélectionner le formulaire d'édition de liste
+//
+// Écouter l'évènement `submit` sur ce formulaire, auquel cas :
+// - empêcher le comportement par défaut du formulaire
+// - récupérer les données du formulaire (le nouveau titre)
+// - récupérer l'ID de la liste à modifier dans les dataset de la fenêtre de dialogue
+// - PATCH `/lists/:listId` avec comme body { "title": "..." }
+// - récupérer le résultat de la requête PATCH, et en cas de succès
+// - sélectionner la liste du DOM correspondant au bon ID
+// - modifier le contenu de l'élément avec le slot `list-title` avec le nouveau titre choisi
+// - fermer la fenêtre de dialogue
+// - reset le formulaire
+//
+// Festoyer !
+```
+
+</details>
+
+---
+
+⚠️ **Les deux parties suivantes sont indépendantes.** ⚠️
+
+---
+
+## Étape 3 (BONUS) - Suppression d'une liste
+
+Bon bah, rebelote, hein 🤪 !
+
+Cette fois-ci, un peu plus débrouillard :
+
+- ajouter un bouton de suppression sur les listes ;
+- ouvrir une fenêtre de dialogue de « confirmation avant suppression » ;
+    > **BONUS** si la liste possède des cartes :
+    > - prévenir que la suppression supprimera également toutes les cartes à l'intérieur ;
+    > - OU empêcher explicitement l'utilisateur de supprimer une liste qui possède des cartes.
+
+- suite à la confirmation de la suppression, faire une requête `DELETE` vers l'API pour supprimer la liste ;
+- retirer la liste de la page ;
+- fermer la fenêtre de dialogue.
+
+## Étape 4 (BONUS) - Drag & Drop
+
+On souhaiterait pouvoir modifier la **position** des listes sur le Kanban, en glissant-déposant une liste vers un nouvel emplacement.
+
+**Problème :** _on va quand même pas le faire à la main 🙀 ?_
+
+**Solution :** _et bah non !_ Il existe des solutions clé-en-main pour la partie frontend.
+
+## 4.1. Installation
+
+Jeter un œil à la [documentation](https://github.com/SortableJS/Sortable) de `SortableJS`,
+aux [démonstrations](http://sortablejs.github.io/Sortable/),
+et l'installer dans le code en utilisant le script fourni via un [CDN](https://github.com/SortableJS/Sortable?tab=readme-ov-file#cdn).
+
+> **NOTE** ce script externe doit être chargé AVANT nos scripts, sinon il ne sera pas possible d'utiliser la variable globale `Sortable`.
+
+## 4.2. Mise en place (frontend)
+
+Objectif n°1 : réussir à logger en `console` l'ID de la liste qui vient d'être déplacé.
+
+<details><summary>Un peu d'aide ?</summary>
+
+```js
+Sortable.create(ELEMENT_DU_DOM_CONTENANT_LISTES, {
+  onEnd(event) {
+    // Callback qui se déclenche lorsque l'utilisateur déplace une liste
+    console.log(event);
+  }
+});
+```
+
+</details>
+
+## 4.3. Mise à jour (backend)
+
+Objectif n°2 : réussir à sauvegarder la position actuelle de toutes les listes.
+
+Pour **chaque** liste sur la page, récupérer sa position et exécuter une requête `PATCH /lists/:listId` (avec le bon body) afin de sauvegarder sa nouvelle position.
+
+> **NOTE** cette approche n'est absolument pas performante, car on lance **une requête HTTP par liste**,
+> ce qui peut faire beaucoup selon le nombre de listes présentes sur la page !
+> Idéalement, on aimerait uniquement mettre à jour la liste qui vient d'être déplacé. Nous discuterons en cours d'autres implémentations et modélisations possibles.
+
+<details><summary>Un peu d'aide</summary>
+
+```js
+// Dans le callback 'onEnd'
+
+// Sélectionner toutes les listes sur la page
+// Pour chaque liste :
+// - récupérer son ID
+// - récupérer sa position
+// - faire l'appel PATCH /lists/:listId avec BODY { position: X }
+
+```
+
+</details>
 
 Ré-ouvrir le projet O'kanban API (backend) et démarrer l'API sur le port de votre choix.
 
