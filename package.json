@@ -1,0 +1,48 @@
+{
+  "name": "s13-okanban-front-kenshirosan",
+  "version": "1.0.0",
+  "description": "[Rappel : lien pour créer des issues](https://github.com/O-clock-Skaven/Soutien-ateliers/issues)",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "vite": "^6.0.3"
+  },
+  "scripts": {
+    "dev": "vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "^3.4.2"
+  },
+   "prettier": {
+    "printWidth": 80,
+    "tabWidth": 4,
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "overrides": [
+      {
+        "files": "*.js",
+        "options": {
+          "parser": "babel"
+        }
+      },
+      {
+        "files": "*.json",
+        "options": {
+          "parser": "json",
+          "tabWidth": 2
+        }
+      }
+    ],
+    "semi": true,
+    "requirePragma": false,
+    "proseWrap": "preserve",
+    "arrowParens": "avoid",
+    "htmlWhitespaceSensitivity": "css",
+    "quoteProps": "as-needed"
+  }
+}
