@@ -1,4 +1,49 @@
-# O'kanban - SPA E03 - CRUD & Drag & Drop
+# O'kanban - SPA E03 - Révisions - CRUD sur les cartes
+
+TODO Bonus **une idee a creuser! glisser une carte en dehors des listes = supprimer la carte**
+
+Les fonctionnalités liées aux listes sont toutes implémentées. **C'est l'heure d'ajouter celles des cartes !**
+
+Challenge de révisions (bonus) - Faites de votre mieux がんばって !
+
+## Étape 1 - READ - Afficher les cartes
+
+Profiter de la réponse API du `GET /lists` qui retourne d'ores et déjà les listes **avec leurs cartes** pour afficher également les cartes à l'intérieur de la liste appropriée.
+
+> Pssst, il faudra très certainement créer une fonction `insertCardInList(card)` pour gérer l'affichage d'une carte dans sa liste de prédilection (`card.list_id`)
+
+En bonus, on peut afficher la couleur de la carte en lui ajoutant une `border`.
+
+## Étape 2 - CREATE - Ajout d'une carte
+
+Faire fonctionner le bouton `➕` afin qu'il ouvre une nouvelle fenêtre de dialogue d'ajout de carte.
+
+On pourra stocker dans le `dataset` de cette fenêtre de dialogue l'ID de la liste dans laquelle ajouter la future carte.
+
+Faire fonctionner le formulaire, appeler la bonne route puis afficher la carte créée dans la liste appropriée.
+
+En bonus, on permet à l'utilisateur de choisir la couleur de la carte.
+
+## Étape 3 - UPDATE - Modification d'une carte
+
+Faire fonctionner le bouton `🖍️` afin qu'il ouvre une nouvelle fenêtre de dialogue d'édition de carte et faire fonctionner cette fenêtre de dialogue
+
+Suite à l'appel API, on modifie l'apparence de la carte en conséquence.
+
+En bonus, on permet à l'utilisateur de modifier également la couleur de la carte.
+
+## Étape 4 - DELETE - Suppression d'une carte
+
+Faire fonctionner le bouton `🗑️` afin qu'il ouvre une fenêtre de dialogue de confirmation de suppression et faire fonctionner cette fenêtre de dialogue.
+
+## Étape 5 - Drag & Drop - Déplacer une carte
+
+Ajouter la possibilité de déplacer une carte :
+
+- au sein de la même liste : on applique le même principe que pour les listes en récupérant l'ID et la position de chaque liste que l'on met à jour via l'API.
+- entre deux listes : il est possible de déplacer une carte d'une liste à l'autre ; dans ce cas, il faudrait aussi _update_ la `list_id` de la carte que l'on déplace.
+
+## O'kanban - SPA E03 - CRUD & Drag & Drop
 
 [Rappel : lien pour créer des issues](https://github.com/O-clock-Skaven/Soutien-ateliers/issues)
 
