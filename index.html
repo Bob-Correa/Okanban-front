@@ -22,7 +22,9 @@
     </head>
 
     <body>
-        <section class="section">
+
+
+        <section class="section" >
             <div class="container">
 
                 <h1 class="title">oKanban</h1>
@@ -99,6 +101,49 @@
             </div>
         </div>
         <!-- END LIST MODAL -->
+
+
+        <!--  UPDATE LIST MODAL -->
+
+        <div class="modal" id="editListModal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <form method="POST">
+                    <header class="modal-card-head">
+                        <p class="modal-card-title">Modifier une liste</p>
+                        <button
+                            class="delete close"
+                            type="button"
+                            aria-label="close"
+                        ></button>
+                    </header>
+                    <section class="modal-card-body">
+                        <div class="field">
+                            <label class="label">Nom</label>
+                            <div class="control">
+
+                                <input type="hidden" name="list_id">
+
+                                <!-- "name=title pour correspondre à notre API" -->
+                                <input
+                                    type="text"
+                                    class="input"
+                                    name="title"
+                                    placeholder="Nom de la liste"
+                                />
+                            </div>
+                        </div>
+                    </section>
+                    <footer class="modal-card-foot">
+                        <button class="button is-success">Save changes</button>
+                        <button class="button close" type="button">
+                            Cancel
+                        </button>
+                    </footer>
+                </form>
+            </div>
+        </div>
+        <!-- END UPDATE LIST MODAL -->
 
         <!-- CARD MODAL -->
         <div class="modal" id="addCardModal">
@@ -279,7 +324,14 @@
 
                         <div class="column is-narrow">
                             <a href="#">
-                                <span class="icon is-small has-text-danger">
+                                <!-- préfixé une classe avec js quand elle ne sert pas en css est un message destiné aux intégrateurs : n'efface pas cette classe -->
+                                <span class="icon is-small has-text-primary js-editList-btn">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </span>
+                            </a>
+                            &nbsp;&nbsp;
+                            <a href="#">
+                                <span class="icon is-small has-text-danger js-deleteList-btn">
                                     <i class="fas fa-trash-alt"></i>
                                 </span>
                             </a>

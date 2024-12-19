@@ -5,6 +5,19 @@
     flex-wrap: wrap;
 }
 
+
+.panel h2 {
+  word-break: break-all;
+}
+
+ul#sortable {
+    background-color: blue;
+}
+ul#sortable li {
+    margin: 1rem;
+    background-color: grey;
+}
+
 .tag {
     cursor: pointer;
 }

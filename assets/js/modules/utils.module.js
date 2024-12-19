@@ -1,5 +1,5 @@
 import { showAddListModal } from './lists/lists.module';
-import { createList } from './lists/api.lists.module';
+import { createList, updateList } from './lists/api.lists.module';
 
 function hideModals() {
     const modal = document.querySelector('.is-active');
@@ -24,14 +24,20 @@ function addListeners() {
     }
 
     //   * ajout de l'event submit au form de création de liste
-    //
     // * on doit créer une nouvelle liste
     // * on doit ajouter un event listener au formulaire de création de liste (submit)
-    const form = document.querySelector('#addListModal form');
-    form.addEventListener('submit', createList);
-    // * on doit récupérer les infos d'un formulaire
-    // * on doit envoyer les données du formulaire à l'API pour créer une nouvelle liste
-    // * quand la liste est créée, on doit l'ajouter sur le DOM
+    const addListform = document.querySelector('#addListModal form');
+    addListform.addEventListener('submit', createList);
+
+    //   * ajout de l'event submit au form de mise à jour de liste
+    const editListForm = document.querySelector('#editListModal form');
+    editListForm.addEventListener('submit', updateList);
 }
 
-export { addListeners, hideModals };
+function showError(err) {
+    console.log('ERR', err);
+
+    alert(err);
+}
+
+export { addListeners, hideModals, showError };
