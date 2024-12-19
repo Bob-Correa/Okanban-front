@@ -5,6 +5,11 @@
     flex-wrap: wrap;
 }
 
+
+.panel h2 {
+  word-break: break-all;
+}
+
 .tag {
     cursor: pointer;
 }
