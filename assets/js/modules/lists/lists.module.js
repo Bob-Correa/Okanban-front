@@ -1,3 +1,4 @@
+import { destroyList } from './api.lists.module';
 // * pour que la modal apparaisse on doit lui ajouter la classe is-active
 // * on doit sélectionner la modal
 // * quand on clique sur le bouton, on ajoute la classe is-active sur la modal
@@ -7,20 +8,36 @@ function showAddListModal() {
     //   modal.className = 'is-active';
 }
 
-function showEditListModal(list) {
+function showEditListModal(id) {
     const modal = document.querySelector('#editListModal');
     modal.classList.add('is-active');
 
     //  on sélectionne l'input caché et on lui donne la valeur de l'id de la liste que l'on vient de cliquer
-    modal.querySelector('input[type=hidden]').value = list.id;
+    modal.querySelector('input[type=hidden]').value = id;
 
     // on récupère les infos qui sont sur le DOM car elles sont dynamiques, et donc ça dynamise la valeur inpout automatiquement
-    const listToUpdate = document.querySelector(`[data-list-id="${list.id}"]`);
+    const listToUpdate = document.querySelector(`[data-list-id="${id}"]`);
     //  on sélectionne l'input title et on lui donne la valeur du titre de la liste que l'on vient de cliquer
     const inputTitle = modal.querySelector('input[name=title]');
     inputTitle.value = listToUpdate.querySelector('h2').textContent;
 
     // inputTitle.setAttribute('placeholder', 'un trux');
+}
+
+async function confirmDeleteList(id) {
+    // effacer qqchose est une opération sensible : donc on fait attention
+    if (!window.confirm('Etes vous sur de vouloir effacer cette liste ?')) {
+        return false;
+    }
+
+    // si on arrive ici, le client a dit oui, donc on efface la liste
+    const ok = await destroyList(id);
+
+    if (ok) {
+        // efface la liste du DOm
+        const list = document.querySelector(`[data-list-id="${id}"]`);
+        list.remove();
+    }
 }
 
 /**
@@ -37,8 +54,11 @@ function makeList(list) {
     const input = clone.querySelector('[name="list_id"]');
     input.value = list.id;
 
-    const editBtn = clone.querySelector('.js-edit-btn');
-    editBtn.addEventListener('click', () => showEditListModal(list));
+    const editBtn = clone.querySelector('.js-editList-btn');
+    editBtn.addEventListener('click', () => showEditListModal(list.id));
+
+    const deleteBtn = clone.querySelector('.js-deleteList-btn');
+    deleteBtn.addEventListener('click', () => confirmDeleteList(list.id));
 
     // l'attribut HTML custom data-* permet de stocker dans le html des infos dont on aurait besoin pour faire des URL, des formulaires etc etc : la fin de l'histoire
     //   data-*

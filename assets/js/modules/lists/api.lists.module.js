@@ -1,12 +1,22 @@
 import { makeList } from './lists.module';
-import { hideModals } from '../utils.module';
+import { hideModals, showError } from '../utils.module';
 import { config } from '../config.module';
 
 async function getLists() {
-    const response = await fetch(`${config.base_url}/lists`); // on récupère une Response
-    const lists = await response.json(); // on transforme le corps de la réponse (JSON) en Objet JS
+    try {
+        const response = await fetch(`${config.base_url}/lists`); // on récupère une Response
 
-    return lists;
+        //  response.json est soit les listes, mais si une erreur se produit, response.json est une instance de la classe Error
+        const maybeLists = await response.json(); // on transforme le corps de la réponse (JSON) en Objet JS
+        //
+        if (!response.ok) {
+            throw maybeLists;
+        }
+
+        return maybeLists;
+    } catch (error) {
+        throw error;
+    }
 }
 
 // * on doit récupérer les infos d'un formulaire
@@ -21,7 +31,8 @@ async function createList(event) {
 
     //   on convertit l'objet formdata en objet litéral
     const dataObj = Object.fromEntries(formData);
-
+    // ! décommenter pour tester la gestion d'erreur
+    // dataObj.title = null;
     const response = await fetch(`${config.base_url}/lists`, {
         method: 'POST',
         // * ce header est obligatoire pour que l'API comprenne le type de données qu'on lui envoie
@@ -32,13 +43,14 @@ async function createList(event) {
         body: JSON.stringify(dataObj),
     });
 
+    const maybeNewList = await response.json();
     if (response.ok) {
-        const newList = await response.json();
+        makeList(maybeNewList);
 
-        makeList(newList);
-
-        form.reset();
+        return form.reset();
     }
+
+    showError(maybeNewList.error);
     //   gestion d'erreur
     hideModals();
 }
@@ -82,4 +94,16 @@ async function updateList(event) {
     hideModals();
 }
 
-export { getLists, createList, updateList };
+async function destroyList(id) {
+    const response = await fetch(`${config.base_url}/lists/${id}`, {
+        method: 'DELETE',
+    });
+
+    if (response.ok) {
+        return true;
+    }
+
+    return false;
+}
+
+export { getLists, createList, updateList, destroyList };

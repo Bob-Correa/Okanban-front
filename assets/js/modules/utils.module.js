@@ -34,4 +34,10 @@ function addListeners() {
     editListForm.addEventListener('submit', updateList);
 }
 
-export { addListeners, hideModals };
+function showError(err) {
+    console.log('ERR', err);
+
+    alert(err);
+}
+
+export { addListeners, hideModals, showError };
