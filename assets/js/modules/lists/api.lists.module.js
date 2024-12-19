@@ -44,13 +44,14 @@ async function createList(event) {
     });
 
     const maybeNewList = await response.json();
-    if (response.ok) {
-        makeList(maybeNewList);
-
-        return form.reset();
+    if (!response.ok) {
+        return showError(maybeNewList.error);
     }
 
-    showError(maybeNewList.error);
+    makeList(maybeNewList);
+
+    form.reset();
+
     //   gestion d'erreur
     hideModals();
 }

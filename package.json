@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "prod": "vite build"
+    "build": "vite build"
   },
   "keywords": [],
   "author": "",
