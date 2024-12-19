@@ -8,7 +8,8 @@
     "vite": "^6.0.3"
   },
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "prod": "vite build"
   },
   "keywords": [],
   "author": "",
