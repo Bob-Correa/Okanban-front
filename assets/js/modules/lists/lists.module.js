@@ -1,4 +1,7 @@
+import Sortable from 'sortablejs';
 import { destroyList } from './api.lists.module';
+import { config } from '../config.module';
+
 // * pour que la modal apparaisse on doit lui ajouter la classe is-active
 // * on doit sélectionner la modal
 // * quand on clique sur le bouton, on ajoute la classe is-active sur la modal
@@ -76,4 +79,39 @@ function makeList(list) {
     document.getElementById('lists-container').appendChild(clone);
 }
 
-export { showAddListModal, makeList };
+function dragNDropList() {
+    // * Pour que le drag n drop fonctionne, on doit donner un conteneur à Sortable, et automatiquement, les enfants du conteneur seront déplaçables
+    const listsContainer = document.getElementById('lists-container');
+
+    Sortable.create(listsContainer, {
+        animation: 500,
+        onEnd: () => {
+            // * Quand on termine le drag n drop , on veut mettre à jour la position de chaque liste sur l'API
+            const lists = document.querySelectorAll('#lists-container .panel');
+
+            // le callback doit être async à cause de la fonction update qui est async
+            lists.forEach(async (list, index) => {
+                // l'index du NodeList (le type de donnée qui contient nos listes) est comme celui d'un tableau, il commence à 0, on lui ajoute 1 pour avoir une position que l'on pourra enregistrer en BDD
+                const position = index + 1;
+                // on doit récupérer l'ID de la liste pour pouvoir faire la mise à jour de la bonne liste
+                const listId = list.getAttribute('data-list-id');
+
+                try {
+                    await fetch(`${config.base_url}/lists/${listId}`, {
+                        method: 'PATCH',
+                        // * ce header est obligatoire pour que l'API comprenne le type de données qu'on lui envoie
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        // * on convertit l'objet en string pour pouvoir l'envoyer dans les tuyaux http
+                        body: JSON.stringify({ position: position }),
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            });
+        },
+    });
+}
+
+export { showAddListModal, makeList, dragNDropList };
