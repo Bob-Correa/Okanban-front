@@ -5,8 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "dotenv": "^16.4.7",
-    "sortablejs": "^1.15.6",
-    "vite": "^6.0.3"
+    "sortablejs": "^1.15.6"
   },
   "scripts": {
     "dev": "vite",
@@ -16,7 +15,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "prettier": "^3.4.2"
+    "prettier": "^3.4.2",
+    "vite": "^6.2.2"
   },
   "prettier": {
     "printWidth": 80,
